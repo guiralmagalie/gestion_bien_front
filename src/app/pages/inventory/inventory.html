@@ -1,0 +1,102 @@
+<div class="inventory-container">
+  <div class="header">
+    <h1>Inventaires</h1>
+    <button class="btn-primary" (click)="showAddForm = true">
+      + Nouvel Inventaire
+    </button>
+  </div>
+
+  <!-- Formulaire d'ajout (affiché conditionnellement) -->
+  <div class="add-form" *ngIf="showAddForm">
+    <h3>Ajouter un inventaire</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nom</label>
+        <input type="text" [(ngModel)]="newInventory.name" placeholder="Ex: Inventaire Q4 2025">
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" [(ngModel)]="newInventory.date">
+      </div>
+      <div class="form-group">
+        <label>Responsable</label>
+        <input type="text" [(ngModel)]="newInventory.responsable" placeholder="Nom du responsable">
+      </div>
+      <div class="form-group">
+        <label>Statut</label>
+        <select [(ngModel)]="newInventory.status">
+          <option value="En cours">En cours</option>
+          <option value="Terminé">Terminé</option>
+          <option value="Planifié">Planifié</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" (click)="addInventory()">Ajouter</button>
+      <button class="btn-secondary" (click)="cancelAdd()">Annuler</button>
+    </div>
+  </div>
+
+  <!-- Grille de cartes d'inventaires -->
+  <div class="inventory-grid" *ngIf="inventories.length > 0">
+    <div class="inventory-card" *ngFor="let inventory of inventories; let i = index">
+      <div class="card-header">
+        <div class="card-number">#{{ i + 1 }}</div>
+        <span class="status-badge" [ngClass]="getStatusClass(inventory.status)">
+          {{ inventory.status }}
+        </span>
+      </div>
+
+      <div class="card-content">
+        <h3 class="inventory-name">{{ inventory.name }}</h3>
+
+        <div class="inventory-details">
+          <div class="detail-item">
+            <span class="detail-icon">📅</span>
+            <span class="detail-label">Date:</span>
+            <span class="detail-value">{{ inventory.date | date:'dd/MM/yyyy' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-icon">👤</span>
+            <span class="detail-label">Responsable:</span>
+            <span class="detail-value">{{ inventory.responsable }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-icon">⚠️</span>
+            <span class="detail-label">Écarts détectés:</span>
+            <span class="detail-value">{{ inventory.ecarts }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-action btn-view" (click)="viewDetails(inventory)" title="Voir les détails">
+          <span class="btn-icon">👁️</span>
+          Détails
+        </button>
+        <button class="btn-action btn-edit" (click)="editInventory(inventory)" title="Modifier">
+          <span class="btn-icon">✏️</span>
+          Modifier
+        </button>
+        <button class="btn-action btn-delete" (click)="deleteInventory(i)" title="Supprimer">
+          <span class="btn-icon">🗑️</span>
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- État vide -->
+  <div class="empty-state" *ngIf="inventories.length === 0">
+    <div class="empty-state-content">
+      <div class="empty-icon">📦</div>
+      <h3>Aucun inventaire trouvé</h3>
+      <p>Commencez par créer votre premier inventaire pour organiser vos biens.</p>
+      <button class="btn-primary" (click)="showAddForm = true">
+        + Créer le premier inventaire
+      </button>
+    </div>
+  </div>
+</div>
