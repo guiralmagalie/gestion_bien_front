@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
@@ -7,17 +7,16 @@ import { AuthService } from './auth.service';
 export interface CreateUserDto {
   id?: string;
   username: string;
-  firstname: string;
-  lastname: string;
-  usercode?: string;
-  email: string;
+  firstName: string;
+  lastName: string;
+  userCode?: string;
+  emailAddress: string;
   password: string;
   userType?: UserType;
-
-  userRoleID?: string[] | null; // liste d'UUID
+  userRoleID?: string[] | null; 
   phoneNumber?: string;
   phoneCountryCode?: string;
-  image?: string;
+  userImage?: string;
 }
 
 export enum UserType {
@@ -25,6 +24,15 @@ export enum UserType {
   USER = 'USER',
   SUPER_ADMIN = 'SUPER_ADMIN',
   MANAGER = 'MANAGER'
+}
+
+// Interface pour la réponse paginée
+export interface PaginatedResponse<T> {
+  items: T[];
+  currentPage: number;
+  totalItems: number;
+  totalPages: number;
+  pageSize: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -41,8 +49,16 @@ export class UserService {
     });
   }
 
-  getAll(): Observable<CreateUserDto[]> {
-    return this.http.get<CreateUserDto[]>(this.baseUrl, { headers: this.getHeaders() });
+  // Mettez à jour pour accepter les paramètres de pagination
+  getAll(page: number = 0, size: number = 20): Observable<PaginatedResponse<CreateUserDto>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    
+    return this.http.get<PaginatedResponse<CreateUserDto>>(this.baseUrl, { 
+      headers: this.getHeaders(),
+      params 
+    });
   }
 
   getById(id: string): Observable<CreateUserDto> {
@@ -60,4 +76,19 @@ export class UserService {
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, { headers: this.getHeaders() });
   }
+
+  deleteUsers(ids: number | number[]): Observable<void> {
+  const idList = Array.isArray(ids) ? ids : [ids];
+
+  let params = new HttpParams();
+  idList.forEach(id => {
+    params = params.append('userIds', id.toString());
+  });
+
+  return this.http.delete<void>(`${this.baseUrl}/`, {
+    headers: this.getHeaders(),
+    params
+  });
+}
+
 }
