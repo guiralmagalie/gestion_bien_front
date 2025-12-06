@@ -1,0 +1,53 @@
+<div class="toast" *ngIf="toastMessage" [ngClass]="toastType">
+  {{ toastMessage }}
+</div>
+
+<div class="form-container">
+
+  <h2 class="form-title">
+    {{ fournisseurId ? 'Modifier Fournisseur' : 'Nouveau Fournisseur' }}
+  </h2>
+
+  <form [formGroup]="fournisseurForm" (ngSubmit)="submit()" class="fournisseur-form">
+
+    <!-- NOM -->
+    <div class="form-field">
+      <label class="form-label">Nom de l'entreprise</label>
+      <input type="text" formControlName="nom" class="form-input" required />
+      <small class="error" *ngIf="fc.nom.touched && fc.nom.invalid">
+        Le nom est obligatoire.
+      </small>
+    </div>
+
+    <!-- EMAIL & TELEPHONE -->
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Email</label>
+        <input type="email" formControlName="email" class="form-input" required />
+        <small class="error" *ngIf="fc.email.touched && fc.email.invalid">
+          Email invalide.
+        </small>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Téléphone</label>
+        <input type="tel" formControlName="telephone" class="form-input" required />
+        <small class="error" *ngIf="fc.telephone.touched && fc.telephone.invalid">
+          Le téléphone est obligatoire.
+        </small>
+      </div>
+    </div>
+
+    <!-- ADRESSE -->
+    <div class="form-field">
+      <label class="form-label">Adresse</label>
+      <textarea formControlName="adresse" rows="3" class="form-textarea"></textarea>
+    </div>
+
+    <div class="button-group">
+      <button type="button" class="btn-retour" (click)="retour()">← Retour</button>
+      <button type="submit" class="btn-submit">Enregistrer</button>
+    </div>
+
+  </form>
+</div>

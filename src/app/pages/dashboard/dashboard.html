@@ -1,0 +1,183 @@
+<div *ngIf="isLoading" class="loading-container">
+  <div class="loading-spinner"></div>
+  <p>Chargement des données...</p>
+</div>
+
+<div *ngIf="!isLoading" class="dashboard-container">
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div>
+      <h1 class="dashboard-title">Tableau de Bord</h1>
+      <p class="dashboard-subtitle">Vue d'ensemble de votre patrimoine</p>
+    </div>
+    <div class="dashboard-date">
+      {{ currentDate | date:'EEEE d MMMM y':'en-US' }}
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <!-- Total Biens -->
+    <div class="kpi-card kpi-card-blue">
+      <div class="kpi-content">
+        <div class="kpi-text">
+          <p class="kpi-label">Total Biens</p>
+          <h3 class="kpi-value">{{ biens.length }}</h3>
+          <span class="kpi-badge">Actifs</span>
+        </div>
+        <div class="kpi-icon-wrapper kpi-icon-blue">
+          <fa-icon [icon]="faBox"></fa-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- Valeur Patrimoine -->
+    <div class="kpi-card kpi-card-green">
+      <div class="kpi-content">
+        <div class="kpi-text">
+          <p class="kpi-label">Valeur Patrimoine</p>
+          <h3 class="kpi-value">{{ totalValue | number:'1.0-0':'en-US' }}</h3>
+          <span class="kpi-badge">FCFA</span>
+        </div>
+        <div class="kpi-icon-wrapper kpi-icon-green">
+          <fa-icon [icon]="faDollarSign"></fa-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coût Maintenance -->
+    <div class="kpi-card kpi-card-orange">
+      <div class="kpi-content">
+        <div class="kpi-text">
+          <p class="kpi-label">Coût Maintenance</p>
+          <h3 class="kpi-value">{{ maintenanceCost | number:'1.0-0':'en-US' }}</h3>
+          <span class="kpi-badge">FCFA</span>
+        </div>
+        <div class="kpi-icon-wrapper kpi-icon-orange">
+          <fa-icon [icon]="faWrench"></fa-icon>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Graphiques -->
+  <div class="charts-grid">
+
+    <!-- PIE Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <h3 class="chart-title">État des Biens</h3>
+          <p class="chart-subtitle">Répartition par catégorie</p>
+        </div>
+        <div class="chart-icon">
+          <fa-icon [icon]="faPieChart"></fa-icon>
+        </div>
+      </div>
+      <div class="chart-body">
+        <canvas baseChart 
+          [data]="etatPieData"
+          [options]="etatPieOptions"
+          chartType="pie">
+        </canvas>
+      </div>
+      <div class="chart-footer">
+        <div class="legend-item">
+          <span class="legend-dot legend-dot-blue"></span>
+          <span class="legend-text">Excellent</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-dot-green"></span>
+          <span class="legend-text">Bon</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-dot-orange"></span>
+          <span class="legend-text">Moyen</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-dot-red"></span>
+          <span class="legend-text">Mauvais</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BAR Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <h3 class="chart-title">Acquisitions</h3>
+          <p class="chart-subtitle">6 derniers mois</p>
+        </div>
+        <div class="chart-icon">
+          <fa-icon [icon]="faChartBar"></fa-icon>
+        </div>
+      </div>
+      <div class="chart-body">
+        <canvas baseChart
+          [data]="acquisitionsBarData"
+          [options]="acquisitionsBarOptions"
+          chartType="bar">
+        </canvas>
+      </div>
+      <div class="chart-footer">
+        <div class="stat-item">
+          <fa-icon [icon]="faArrowTrendUp"></fa-icon>
+          <span>+12% ce mois</span>
+        </div>
+        <div class="stat-item">
+          <fa-icon [icon]="faCalendar"></fa-icon>
+          <span>Moyenne: 8/mois</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Table récapitulative -->
+  <div class="summary-section">
+    <div class="summary-header">
+      <h3 class="summary-title">Dernières Activités</h3>
+      <button class="summary-link">
+        Voir tout
+        <fa-icon [icon]="faArrowRight"></fa-icon>
+      </button>
+    </div>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-icon summary-icon-blue">
+          <fa-icon [icon]="faPlus"></fa-icon>
+        </div>
+        <div class="summary-content">
+          <h4 class="summary-card-title">Nouveaux biens</h4>
+          <p class="summary-card-value">{{ biens.length > 0 ? biens[biens.length - 1]?.libelle : 'Aucun' }}</p>
+          <span class="summary-card-date">Il y a 2 jours</span>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon summary-icon-orange">
+          <fa-icon [icon]="faTools"></fa-icon>
+        </div>
+        <div class="summary-content">
+          <h4 class="summary-card-title">Maintenance programmée</h4>
+          <p class="summary-card-value">3 interventions</p>
+          <span class="summary-card-date">Cette semaine</span>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon summary-icon-green">
+          <fa-icon [icon]="faCheckCircle"></fa-icon>
+        </div>
+        <div class="summary-content">
+          <h4 class="summary-card-title">Inventaire validé</h4>
+          <p class="summary-card-value">{{ biens.length }} éléments</p>
+          <span class="summary-card-date">Aujourd'hui</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,66 @@
+<div class="toast" *ngIf="toastMessage" [ngClass]="toastType">
+  {{ toastMessage }}
+</div>
+
+<div class="form-container">
+
+  <h2 class="form-title">
+    {{ isEdit ? 'Modifier Commande' : 'Nouvelle Commande' }}
+  </h2>
+
+  <form [formGroup]="commandeForm" (ngSubmit)="submit()" class="commande-form">
+
+    <!-- DATE -->
+    <div class="form-group">
+      <label for="dateCommande">Date de commande</label>
+      <input type="date" id="dateCommande" formControlName="dateCommande" />
+
+      <small class="error" *ngIf="f['dateCommande'].touched && f['dateCommande'].invalid">
+    La date est obligatoire.
+  </small>
+    </div>
+
+    <!-- MONTANT -->
+    <div class="form-group">
+      <label for="montantTotal">Montant total</label>
+      <input type="number" id="montantTotal" formControlName="montantTotal" placeholder="0.00" />
+
+      
+  <small class="error" *ngIf="f['montantTotal'].touched && f['montantTotal'].invalid">
+    Le montant doit être supérieur à 0.
+  </small>
+    </div>
+
+    <!-- FOURNISSEUR -->
+    <div class="form-group">
+      <label for="fournisseur">Fournisseur</label>
+
+      <div class="select-wrapper">
+        <select id="fournisseur" formControlName="fournisseurId">
+          <option value="" disabled>Choisir un fournisseur</option>
+          <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+        </select>
+      </div>
+
+      <small class="error" *ngIf="f['fournisseurId'].touched && f['fournisseurId'].invalid">
+    Vous devez choisir un fournisseur.
+  </small>
+    </div>
+
+    <!-- STATUT -->
+    <div class="form-group">
+      <label for="statut">Statut</label>
+      <select id="statut" formControlName="statut">
+        <option>En attente</option>
+        <option>Validée</option>
+        <option>Livrée</option>
+      </select>
+    </div>
+
+    <div class="button-group">
+      <button type="button" class="btn-retour" (click)="retour()">← Retour</button>
+      <button type="submit" class="btn-submit">Enregistrer</button>
+    </div>
+
+  </form>
+</div>

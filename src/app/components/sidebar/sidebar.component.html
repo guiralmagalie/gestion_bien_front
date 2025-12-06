@@ -1,0 +1,49 @@
+<div class="flex h-screen bg-slate-50">
+  <!-- Sidebar Desktop -->
+  <aside class="sidebar-desktop">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">G</div>
+      <h1 class="sidebar-title">GestiBien</h1>
+    </div>
+    <nav class="sidebar-nav">
+      <ul class="nav-list space-y-1">
+        <li *ngFor="let item of navItems">
+          <a routerLink="{{item.path}}" 
+             routerLinkActive="active"
+             class="nav-item">
+            <fa-icon [icon]="item.icon"></fa-icon>
+            <span>{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Mobile Sidebar -->
+  <aside class="sidebar-mobile" [class.open]="menuOpen">
+    <div class="mobile-header">
+      <div class="flex items-center gap-2">
+        <div class="sidebar-logo">G</div>
+        <h1 class="sidebar-title">GestionBien</h1>
+      </div>
+      <button (click)="toggleMenu()" class="close-button">
+        <fa-icon [icon]="faClose"></fa-icon>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+      <ul class="nav-list space-y-2">
+        <li *ngFor="let item of navItems">
+          <a routerLink="{{item.path}}" 
+             (click)="closeMenu()"
+             class="nav-item"
+             routerLinkActive="active">
+            <fa-icon [icon]="item.icon"></fa-icon>
+            <span>{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+
+</div>

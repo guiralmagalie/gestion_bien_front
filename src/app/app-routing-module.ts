@@ -7,9 +7,15 @@ import { PrivateLayout } from './layout/private-layout/private-layout';
 import { authGuard } from './guards/auth.guard';
 import { CommandeFormComponent } from './pages/acquisitions/commande-form/commande-form.component';
 import { FournisseurFormComponent } from './pages/acquisitions/fournisseur-form/fournisseur-form.component';
+import { UserComponent } from './pages/users/user.component';
 
 const routes: Routes = [
-  // 🔓 ROUTES PUBLIQUES AVANT
+
+  // 🟢 1. QUAND on est sur "/" → on redirige vers "/login"
+  //    (ou vers /app/dashboard si déjà connecté)
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+  // 🔓 2. ROUTES PUBLIQUES
   {
     path: '',
     component: PublicLayout,
@@ -18,10 +24,10 @@ const routes: Routes = [
     ]
   },
 
-  // 🔐 ROUTES PRIVÉES ENSUITE
+  // 🔐 3. ROUTES PRIVÉES
   {
     path: 'app',
-    //canActivate: authGuard,
+    canActivate: [authGuard],
     component: PrivateLayout,
     children: [
       { path: 'dashboard', loadChildren: () => import('./pages/dashboard/dashboard-module').then(m => m.DashboardModule) },
@@ -30,13 +36,19 @@ const routes: Routes = [
       { path: 'inventory', loadChildren: () => import('./pages/inventory/inventory-module').then(m => m.InventoryModule) },
       { path: 'maintenance', loadChildren: () => import('./pages/maintenance/maintenance-module').then(m => m.MaintenanceModule) },
       { path: 'stats', loadChildren: () => import('./pages/reports/reports-module').then(m => m.ReportsModule) },
+      { path: 'users', component: UserComponent},
+
+
+      // Redirection interne du layout privé
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ]
   },
 
-  // 404
-  { path: '**', redirectTo: 'dashboard' }
+
+  // 🛑 4. PAGE 404
+  { path: '**', redirectTo: 'login' }
 ];
+
 
 
 @NgModule({

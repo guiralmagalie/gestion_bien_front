@@ -1,0 +1,44 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-left">
+      <button class="menu-toggle" *ngIf="auth.isAuthenticated()" (click)="toggleMenu()">
+        <fa-icon [icon]="menuOpen ? faClose : faMenu"></fa-icon>
+      </button>
+
+      <a routerLink="/dashboard" class="brand">
+        <img src="../../pages/assets/logo.png" alt="Logo" class="brand-logo">
+        <span class="brand-text">Gestion des Biens</span>
+      </a>
+    </div>
+
+    <div class="nav-right">
+      <div class="user-dropdown" *ngIf="auth.currentUser()">
+        <button class="user-info" (click)="toggleUserMenu()">
+          <span class="user-avatar">{{ auth.currentUser()?.name?.charAt(0)?.toUpperCase() || '' }}</span>
+          <span class="user-name">{{ auth.currentUser()?.name || '' }}</span>
+          <fa-icon [icon]="faChevronDown" class="chevron" [class.rotate]="userMenuOpen"></fa-icon>
+        </button>
+
+        <div class="dropdown-menu" [class.show]="userMenuOpen">
+          <div class="dropdown-header">
+            <div class="user-avatar-large">{{ auth.currentUser()?.name?.charAt(0)?.toUpperCase() || '' }}</div>
+            <div class="user-details">
+              <div class="user-name-full">{{ auth.currentUser()?.name || '' }}</div>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item logout" (click)="logout()">
+            <fa-icon [icon]="faSignOut"></fa-icon>
+            Se déconnecter
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-login" *ngIf="!auth.isAuthenticated()" routerLink="/login">
+        Connexion
+      </button>
+    </div>
+  </div>
+
+  <div class="overlay" [class.show]="menuOpen" (click)="closeMenu()"></div>
+</nav>

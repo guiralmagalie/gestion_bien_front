@@ -1,0 +1,87 @@
+<div class="asset-detail-container">
+  <div class="detail-header">
+    <button class="btn-back" (click)="back()">
+      ← Retour
+    </button>
+    <h2 class="detail-title">Détails du Bien</h2>
+  </div>
+
+  <div *ngIf="asset" class="asset-card">
+    <!-- En-tête de la carte -->
+    <div class="card-header">
+      <div class="asset-code-badge">
+        <span class="badge-label">Code</span>
+        <span class="badge-value">{{ asset.code }}</span>
+      </div>
+      <span class="asset-status" [class]="'status-' + asset.etat.toLowerCase()">
+        {{ asset.etat }}
+      </span>
+    </div>
+
+    <!-- Libellé principal -->
+    <div class="asset-main-info">
+      <h3 class="asset-libelle">{{ asset.libelle }}</h3>
+      <p class="asset-location">
+        <fa-icon [icon]="faLocation"></fa-icon>
+        {{ asset.localisation }}
+      </p>
+      <h3 class="asset-libelle">Fournisseur</h3>
+      <p *ngIf="asset.fournisseur" class="asset-location">
+        {{ asset.fournisseur.nom }}
+      </p>
+    </div>
+
+    <!-- Informations financières -->
+    <div class="info-section">
+      <h4 class="section-title"><fa-icon [icon]="faMoney"></fa-icon> Informations Financières</h4>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Valeur d'achat</span>
+          <span class="info-value value-primary">{{ asset.valeurAchat | currency:'XOF':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Valeur actuelle estimée</span>
+          <span class="info-value value-secondary">{{ calculateCurrentValue(asset) | currency:'XOF':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Durée d'amortissement</span>
+          <span class="info-value">{{ asset.dureeAmortissement }} ans</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Informations temporelles -->
+    <div class="info-section">
+      <h4 class="section-title"><fa-icon [icon]="faCalendar"></fa-icon> Informations Temporelles</h4>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Date d'acquisition</span>
+          <span class="info-value">{{ asset.dateAcquisition | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Fin de garantie</span>
+          <span class="info-value" [class.text-muted]="!asset.dateFinGarantie">
+            {{ asset.dateFinGarantie ? (asset.dateFinGarantie | date:'dd/MM/yyyy') : 'Non définie' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pied de carte avec actions -->
+    <div class="card-footer">
+      <button class="btn-action btn-edit" (click)="router.navigate(['/app/assets/edit', asset.id])">
+        <fa-icon [icon]="faEdit"></fa-icon> Modifier
+      </button>
+      <button class="btn-action btn-delete" (click)="deleteAsset()">
+        <fa-icon [icon]="faDelete"></fa-icon> Supprimer
+      </button>
+    </div>
+  </div>
+
+  <!-- Loader si pas de données -->
+  <div *ngIf="!asset" class="loader-container">
+    <div class="spinner"></div>
+    <p>Chargement des détails...</p>
+  </div>
+</div>

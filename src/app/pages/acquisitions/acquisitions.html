@@ -1,0 +1,113 @@
+<div class="acquisitions-container">
+
+  <!-- Header + Tabs -->
+  <div class="acquisitions-header">
+    <h2 class="page-title">Acquisitions</h2>
+
+    <div class="tabs-wrapper">
+      <button (click)="activeTab='commandes'" [ngClass]="activeTab==='commandes' ? 'tab-active' : 'tab-inactive'"
+        class="tab-button">
+        <fa-icon [icon]="icons.cart" [ngStyle]="{'font-size.px': 18}"></fa-icon> Commandes
+      </button>
+
+      <button (click)="activeTab='fournisseurs'" [ngClass]="activeTab==='fournisseurs' ? 'tab-active' : 'tab-inactive'"
+        class="tab-button">
+        <fa-icon [icon]="icons.users" [ngStyle]="{'font-size.px': 18}"></fa-icon> Fournisseurs
+      </button>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrapper">
+      <fa-icon [icon]="icons.search" class="search-icon" [ngStyle]="{'font-size.px': 20}"></fa-icon>
+      <input type="text"
+        placeholder="{{activeTab==='commandes' ? 'Rechercher une commande...' : 'Rechercher un fournisseur...'}}"
+        [(ngModel)]="searchTerm" class="search-input" />
+    </div>
+
+    <button (click)="goToAdd()" class="btn-add">
+      <fa-icon [icon]="icons.plus" [ngStyle]="{'font-size.px': 20}"></fa-icon>
+      <span>Ajouter</span>
+    </button>
+  </div>
+
+  <!-- Commandes Table -->
+  <div *ngIf="activeTab==='commandes'" class="table-container">
+    <table class="data-table">
+      <thead class="table-header">
+        <tr>
+          <th class="table-th">Date</th>
+          <th class="table-th">Fournisseur</th>
+          <th class="table-th">Montant</th>
+          <th class="table-th">Statut</th>
+          <th class="table-th table-th-actions">Actions</th>
+        </tr>
+      </thead>
+     <tbody class="table-body" *ngIf="fournisseurs.length > 0; else loading">
+        <tr *ngFor="let commande of commandes | filterCommande:searchTerm" class="table-row">
+          <td class="table-td table-td-date">{{commande.dateCommande | date:'dd/MM/yyyy'}}</td>
+         <td class="table-td table-td-fournisseur">
+  {{ commande.fournisseur?.nom || 'Inconnu' }}
+</td>
+
+
+          <td class="table-td table-td-montant">{{commande.montantTotal | number:'1.0-2'}} FCFA</td>
+          <td class="table-td">
+            <span class="status-badge" [ngClass]="{
+              'status-livree': commande.statut==='Livrée',
+              'status-validee': commande.statut==='Validée',
+              'status-attente': commande.statut==='En attente'
+            }">
+              <fa-icon *ngIf="commande.statut==='Livrée'" [icon]="icons.check" [ngStyle]="{'font-size.px': 12}"></fa-icon>
+              <fa-icon *ngIf="commande.statut==='Validée'" [icon]="icons.truck" [ngStyle]="{'font-size.px': 12}"></fa-icon>
+              <fa-icon *ngIf="commande.statut==='En attente'" [icon]="icons.clock" [ngStyle]="{'font-size.px': 12}"></fa-icon>
+              {{commande.statut}}
+            </span>
+          </td>
+          <td class="table-td table-td-actions">
+            <button (click)="editCommande(commande.id!)" class="btn-icon btn-icon-edit">
+              <fa-icon [icon]="icons.edit" [ngStyle]="{'font-size.px': 16}"></fa-icon>
+            </button>
+            <button (click)="deleteCommande(commande.id!)" class="btn-icon btn-icon-delete">
+              <fa-icon [icon]="icons.delete" [ngStyle]="{'font-size.px': 16}"></fa-icon>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="(commandes | filterCommande:searchTerm).length===0">
+          <td colspan="5" class="table-empty">Aucune commande trouvée.</td>
+        </tr>
+      </tbody>
+      <ng-template #loading>
+  <tr><td colspan="5">Chargement...</td></tr>
+</ng-template>
+    </table>
+  </div>
+
+  <!-- Fournisseurs Grid -->
+  <div *ngIf="activeTab==='fournisseurs'" class="fournisseurs-grid">
+    <div *ngFor="let f of fournisseurs | filterFournisseur:searchTerm" class="fournisseur-card">
+      <div class="card-header">
+        <div class="card-avatar">{{f.nom.charAt(0)}}</div>
+        <div class="card-actions">
+          <button (click)="router.navigate(['/app/acquisitions/supplier/edit', f.id])" class="card-btn card-btn-edit">
+            <fa-icon [icon]="icons.edit" [ngStyle]="{'font-size.px': 16}"></fa-icon>
+          </button>
+          <button (click)="deleteFournisseur(f.id!)" class="card-btn card-btn-delete">
+            <fa-icon [icon]="icons.delete" [ngStyle]="{'font-size.px': 16}"></fa-icon>
+          </button>
+        </div>
+      </div>
+      <h3 class="card-title">{{f.nom}}</h3>
+      <p class="card-address">{{f.adresse}}</p>
+      <div class="card-info">
+        <div class="info-row"><span class="info-label">Email:</span> {{f.email}}</div>
+        <div class="info-row"><span class="info-label">Tel:</span> {{f.telephone}}</div>
+      </div>
+    </div>
+    <div *ngIf="(fournisseurs | filterFournisseur:searchTerm).length===0" class="fournisseurs-empty">
+      Aucun fournisseur trouvé.
+    </div>
+  </div>
+
+</div>

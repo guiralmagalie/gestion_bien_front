@@ -1,0 +1,22 @@
+<div>
+  <h2>Écarts de l’inventaire #{{inventaire.id}}</h2>
+
+  <div *ngFor="let e of ecarts" class="p-2 border mb-2 rounded">
+    <span>{{e.type}} : {{e.description}}</span>
+    <input type="checkbox" [(ngModel)]="e.resolu" (change)="updateEcartCount()"/> Résolu
+  </div>
+
+  <div class="mt-4">
+    <input #desc placeholder="Description" class="border p-1"/>
+    <select #type class="border p-1">
+      <option value="Manquant">Manquant</option>
+      <option value="Endommagé">Endommagé</option>
+      <option value="Autre">Autre</option>
+    </select>
+    <button (click)="addEcart(desc.value, type.value)">Ajouter Écart</button>
+  </div>
+
+  <div class="mt-4">
+    <button (click)="saveInventaire()">Enregistrer l’inventaire</button>
+  </div>
+</div>

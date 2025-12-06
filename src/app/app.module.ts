@@ -1,6 +1,7 @@
 import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';   // <-- IMPORTANT !!
 
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
@@ -21,16 +22,17 @@ import { LucideAngularModule, TrendingUp, AlertTriangle, DollarSign, Box } from 
   imports: [
     BrowserModule,
     FormsModule,
+    HttpClientModule,  
     AppRoutingModule,
     NavbarComponent,
     FontAwesomeModule,
-    BrowserAnimationsModule, // obligatoire
+    BrowserAnimationsModule,
     ToastrModule.forRoot({ positionClass: 'toast-top-right', timeOut: 3000 }),
     SidebarComponent,
     PrivateLayout,
     Login,
     LucideAngularModule.pick({ TrendingUp, AlertTriangle, DollarSign, Box })
-],
+  ],
   providers: [
     provideBrowserGlobalErrorListeners()
   ],

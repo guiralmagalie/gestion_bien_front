@@ -1,0 +1,74 @@
+<div class="assets-container">
+  <div class="header-section">
+    <h2 class="page-title">Liste des Biens</h2>
+    <button class="btn-add" (click)="router.navigate(['/app/assets/new'])">
+      <span class="btn-icon">+</span>
+      Ajouter un bien
+    </button>
+  </div>
+
+  <!-- 🔍 Recherche -->
+  <div class="search-section">
+    <input 
+      type="text" 
+      class="search-input"
+      [(ngModel)]="searchTerm" 
+      placeholder="Rechercher par code, libellé, localisation...">
+  </div>
+
+  <!-- 🔄 Loader -->
+  <div *ngIf="loading" class="loader">
+    <div class="spinner"></div>
+    <p>Chargement des biens...</p>
+  </div>
+
+  <!-- 📝 Aucun bien -->
+  <div *ngIf="!loading && assets.length === 0" class="empty-state">
+    <div class="empty-icon">📦</div>
+    <h3>Aucun bien enregistré</h3>
+    <p>Commencez par ajouter votre premier bien</p>
+  </div>
+
+  <!-- 🔎 Aucun résultat avec la recherche -->
+  <div *ngIf="!loading && assets.length > 0 && filteredAssets().length === 0" class="empty-state">
+    <div class="empty-icon">🔍</div>
+    <h3>Aucun résultat</h3>
+    <p>Aucun bien ne correspond à « {{ searchTerm }} »</p>
+  </div>
+
+  <!-- 📋 Tableau -->
+  <div class="table-wrapper" *ngIf="!loading && filteredAssets().length > 0">
+    <table class="assets-table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+          <th>État</th>
+          <th>Localisation</th>
+          <th>Valeur</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let asset of filteredAssets()">
+          <td><span class="badge-code">{{ asset.code }}</span></td>
+          <td class="td-libelle">{{ asset.libelle }}</td>
+          <td><span class="badge-etat" [class]="'badge-' + asset.etat.toLowerCase()">{{ asset.etat }}</span></td>
+          <td>{{ asset.localisation }}</td>
+          <td class="td-valeur">{{ asset.valeurAchat | currency:'XOF':'symbol':'1.0-0' }}</td>
+          <td class="td-actions">
+            <button class="btn-action btn-view" (click)="router.navigate(['/app/assets/view', asset.id])" title="Voir">
+              <fa-icon [icon]="faEye"></fa-icon>
+            </button>
+            <button class="btn-action btn-edit" (click)="router.navigate(['/app/assets/edit', asset.id])" title="Modifier">
+              <fa-icon [icon]="faEdit"></fa-icon>
+            </button>
+            <button class="btn-action btn-delete" (click)="deleteAsset(asset)" title="Supprimer">
+              <fa-icon [icon]="faTrash"></fa-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

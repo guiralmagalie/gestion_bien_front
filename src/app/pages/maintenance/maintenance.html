@@ -1,0 +1,165 @@
+<div class="maintenance-container">
+
+  <!-- HEADER -->
+  <div class="header-section">
+    <div>
+      <h2 class="page-title">Maintenance</h2>
+      <p class="page-subtitle">Suivi des interventions techniques et coûts associés.</p>
+    </div>
+
+    <div class="header-actions">
+      <div class="total-badge">
+        <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span>Total : {{ totalCost | number:'1.0-0':'en-US' }} FCFA</span>
+      </div>
+
+      <button (click)="openModal()" class="btn-primary">
+        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Nouvelle Intervention
+      </button>
+    </div>
+  </div>
+
+  <!-- SEARCH + FILTER -->
+  <div class="search-filter-section">
+    <div class="search-wrapper">
+      <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <input class="search-input"
+             placeholder="Rechercher une intervention..."
+             [(ngModel)]="searchTerm" />
+    </div>
+
+    <select class="filter-select"
+            [(ngModel)]="filterType">
+      <option value="Tous">📋 Tous</option>
+      <option value="Préventive">🛡️ Préventive</option>
+      <option value="Corrective">🔧 Corrective</option>
+    </select>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-container">
+
+    <table *ngIf="filteredMaintenances.length > 0" class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Bien</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th class="text-right">Coût</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let m of filteredMaintenances" class="table-row">
+          <td class="date-cell">
+            <svg class="cell-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            {{ m.date | date:'dd/MM/yyyy':'en-US' }}
+          </td>
+          <td class="asset-cell">{{ getAssetLabel(m.bienId) }}</td>
+          <td>
+            <span class="type-badge" [class.type-preventive]="m.type === 'Préventive'" [class.type-corrective]="m.type === 'Corrective'">
+              {{ m.type }}
+            </span>
+          </td>
+          <td class="description-cell">{{ m.description }}</td>
+          <td class="cost-cell">{{ m.cout | number:'1.0-0':'en-US' }} FCFA</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredMaintenances.length === 0" class="empty-state">
+      <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <p>Aucune intervention trouvée</p>
+      <span>Essayez de modifier vos critères de recherche</span>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div *ngIf="isModalOpen" class="modal-overlay" (click)="isModalOpen = false">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3 class="modal-title">Nouvelle Intervention</h3>
+        <button (click)="isModalOpen = false" class="modal-close">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form (ngSubmit)="submit()" class="modal-form">
+
+        <div class="form-group">
+          <label class="form-label">Bien concerné</label>
+          <select class="form-input"
+                  required
+                  [(ngModel)]="currentMaintenance.bienId"
+                  name="bienId">
+            <option value="0">Sélectionner un bien</option>
+            <option *ngFor="let a of assets" [value]="a.id">{{ a.libelle }} ({{ a.code }})</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Date d'intervention</label>
+          <input class="form-input"
+                 type="date"
+                 required
+                 name="date"
+                 [(ngModel)]="currentMaintenance.date" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Type d'intervention</label>
+          <select class="form-input"
+                  name="type"
+                  [(ngModel)]="currentMaintenance.type">
+            <option value="Corrective">🔧 Corrective</option>
+            <option value="Préventive">🛡️ Préventive</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-input"
+                    rows="3"
+                    required
+                    name="description"
+                    placeholder="Décrivez l'intervention effectuée..."
+                    [(ngModel)]="currentMaintenance.description"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Coût (FCFA)</label>
+          <input class="form-input"
+                 type="number"
+                 required
+                 name="cout"
+                 placeholder="0"
+                 [(ngModel)]="currentMaintenance.cout" />
+        </div>
+
+        <button type="submit" class="btn-submit">
+          <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Enregistrer l'intervention
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+</div>

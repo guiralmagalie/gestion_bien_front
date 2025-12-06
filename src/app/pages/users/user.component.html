@@ -1,0 +1,131 @@
+<div class="user-container">
+  <h1>Gestion des utilisateurs</h1>
+
+  <!-- FORMULAIRE CREATION / MODIFICATION -->
+  <mat-card *ngIf="showForm" class="user-form-card">
+    <mat-card-title>{{ selectedUser.id ? 'Modifier utilisateur' : 'Créer un utilisateur' }}</mat-card-title>
+    <mat-card-content>
+      <div class="form-grid">
+        <mat-form-field appearance="fill">
+          <mat-label>Nom d'utilisateur</mat-label>
+          <input matInput [(ngModel)]="selectedUser.username">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Prénom</mat-label>
+          <input matInput [(ngModel)]="selectedUser.firstname">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Nom</mat-label>
+          <input matInput [(ngModel)]="selectedUser.lastname">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Code utilisateur</mat-label>
+          <input matInput [(ngModel)]="selectedUser.usercode">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Email</mat-label>
+          <input matInput [(ngModel)]="selectedUser.email">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Mot de passe</mat-label>
+          <input matInput type="password" [(ngModel)]="selectedUser.password">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+  <mat-label>Type d'utilisateur</mat-label>
+  <mat-select [(ngModel)]="selectedUser.userType">
+    <mat-option *ngFor="let type of userTypes" [value]="type">{{type}}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+
+        <mat-form-field appearance="fill">
+          <mat-label></mat-label>
+          <input matInput [(ngModel)]="selectedUser.userRoleID">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Numéro de téléphone</mat-label>
+          <input matInput [(ngModel)]="selectedUser.phoneNumber">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Indicatif pays</mat-label>
+          <input matInput [(ngModel)]="selectedUser.phoneCountryCode">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Image (URL)</mat-label>
+          <input matInput [(ngModel)]="selectedUser.image">
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="saveUser()">
+        {{ selectedUser.id ? 'Mettre à jour' : 'Créer' }}
+      </button>
+      <button mat-button color="warn" (click)="cancelForm()">Annuler</button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- BOUTON POUR AFFICHER LE FORMULAIRE -->
+  <div *ngIf="!showForm" class="add-user-btn">
+    <button mat-raised-button color="primary" (click)="addUser()">+ Nouvel utilisateur</button>
+  </div>
+
+  <!-- LISTE DES UTILISATEURS -->
+  <mat-card class="user-list-card" *ngIf="users.length > 0">
+    <mat-card-title>Liste des utilisateurs</mat-card-title>
+    <mat-card-content>
+      <table mat-table [dataSource]="users" class="mat-elevation-z8">
+
+        <!-- Username -->
+        <ng-container matColumnDef="username">
+          <th mat-header-cell *matHeaderCellDef>Nom d'utilisateur</th>
+          <td mat-cell *matCellDef="let user">{{user.username}}</td>
+        </ng-container>
+
+        <!-- Firstname -->
+        <ng-container matColumnDef="firstname">
+          <th mat-header-cell *matHeaderCellDef>Prénom</th>
+          <td mat-cell *matCellDef="let user">{{user.firstName}}</td>
+        </ng-container>
+
+        <!-- Lastname -->
+        <ng-container matColumnDef="lastname">
+          <th mat-header-cell *matHeaderCellDef>Nom</th>
+          <td mat-cell *matCellDef="let user">{{user.lastName}}</td>
+        </ng-container>
+
+        <!-- Email -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let user">{{user.emailAddress}}</td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let user">
+            <button mat-button color="accent" (click)="selectUser(user)">Éditer</button>
+            <button mat-button color="warn" (click)="deleteUser(user.id!)">Supprimer</button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['username','firstname','lastname','email','actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['username','firstname','lastname','email','actions']"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- État vide -->
+  <div *ngIf="users.length === 0" class="empty-state">
+    <p>Aucun utilisateur trouvé. Créez votre premier utilisateur.</p>
+  </div>
+</div>

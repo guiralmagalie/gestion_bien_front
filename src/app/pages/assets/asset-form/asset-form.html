@@ -1,0 +1,164 @@
+<div class="asset-form-container">
+  <div class="form-header">
+    <h2 class="form-title">{{ id ? 'Modifier' : 'Ajouter' }} un Bien</h2>
+  </div>
+
+  <form #f="ngForm" (ngSubmit)="save(f)" novalidate class="asset-form">
+    
+    <!-- Code (lecture seule) -->
+    <div class="form-group">
+      <label class="form-label">Code <span class="required">*</span></label>
+      <div class="input-with-loader">
+        <input 
+          type="text" 
+          class="form-input input-readonly" 
+          [(ngModel)]="asset.code" 
+          name="code" 
+          required 
+          readonly>
+        <span class="loader-inline" *ngIf="loadingCode">
+          <span class="spinner-small"></span>
+          Génération...
+        </span>
+      </div>
+      <small class="error" *ngIf="f.submitted && !asset.code">
+        ⚠ Le code est requis
+      </small>
+    </div>
+
+    <!-- Libellé -->
+    <div class="form-group">
+      <label class="form-label">Libellé <span class="required">*</span></label>
+      <input 
+        type="text" 
+        class="form-input" 
+        [(ngModel)]="asset.libelle" 
+        name="libelle" 
+        placeholder="Ex: Ordinateur portable Dell"
+        required>
+      <small class="error" *ngIf="f.submitted && !asset.libelle">
+        ⚠ Le libellé est requis
+      </small>
+    </div>
+
+    <!-- Date acquisition & Valeur achat (en ligne) -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Date d'acquisition <span class="required">*</span></label>
+        <input 
+          type="date" 
+          class="form-input" 
+          [(ngModel)]="asset.dateAcquisition" 
+          name="dateAcquisition" 
+          required>
+        <small class="error" *ngIf="f.submitted && !asset.dateAcquisition">
+          ⚠ La date est requise
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Valeur d'achat (FCFA) <span class="required">*</span></label>
+        <input 
+          type="number" 
+          class="form-input" 
+          [(ngModel)]="asset.valeurAchat" 
+          name="valeurAchat" 
+          placeholder="0"
+          required 
+          min="0">
+        <small class="error" *ngIf="f.submitted && asset.valeurAchat < 0">
+          ⚠ La valeur doit être positive
+        </small>
+      </div>
+    </div>
+
+    <!-- Durée Amortissement & État (en ligne) -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Durée d'amortissement (années) <span class="required">*</span></label>
+        <input 
+          type="number" 
+          class="form-input" 
+          [(ngModel)]="asset.dureeAmortissement" 
+          name="dureeAmortissement" 
+          placeholder="Ex: 5"
+          required 
+          min="1">
+        <small class="error" *ngIf="f.submitted && asset.dureeAmortissement < 1">
+          ⚠ La durée doit être au moins 1 an
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">État</label>
+        <select class="form-select" [(ngModel)]="asset.etat" name="etat">
+          <option *ngFor="let e of Object.values(EtatBien)" [value]="e">{{ e }}</option>
+        </select>
+      </div>
+    </div>
+
+        <div class="form-group">
+  <label class="form-label">Fournisseur <span class="required">*</span></label>
+  <select
+    class="form-select"
+    [(ngModel)]="asset.fournisseurId"
+    name="fournisseurId"
+    #fournisseurModel="ngModel"
+    required
+  >
+    <option value="" disabled selected>-- Choisir un fournisseur --</option>
+    <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+  </select>
+  <small class="error" *ngIf="fournisseurModel.touched && fournisseurModel.invalid">
+    Veuillez sélectionner un fournisseur
+  </small>
+</div>
+
+
+    <!-- Localisation -->
+    <div class="form-group">
+      <label class="form-label">Localisation <span class="required">*</span></label>
+      <input 
+        type="text" 
+        class="form-input" 
+        [(ngModel)]="asset.localisation" 
+        name="localisation" 
+        placeholder="Ex: Bureau 201, Bâtiment A"
+        required>
+      <small class="error" *ngIf="f.submitted && !asset.localisation">
+        ⚠ La localisation est requise
+      </small>
+    </div>
+
+    <!-- Fin Garantie -->
+    <div class="form-group">
+      <label class="form-label">Date de fin de garantie</label>
+      <input 
+        type="date" 
+        class="form-input" 
+        [(ngModel)]="asset.dateFinGarantie" 
+        name="dateFinGarantie">
+      <small class="form-hint">Optionnel</small>
+    </div>
+
+    <!-- Boutons -->
+    <div class="button-group">
+      <button type="button" class="btn-cancel" (click)="router.navigate(['/app/assets'])">
+        Annuler
+      </button>
+      <button type="submit" class="btn-submit">
+        <span class="btn-icon">💾</span>
+        Enregistrer
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Toasts -->
+<div class="toasts">
+  <div *ngFor="let t of toasts" class="toast" [ngClass]="'toast-' + t.type">
+    <span class="toast-icon" *ngIf="t.type === 'success'">✓</span>
+    <span class="toast-icon" *ngIf="t.type === 'error'">✕</span>
+    {{ t.message }}
+  </div>
+</div>
